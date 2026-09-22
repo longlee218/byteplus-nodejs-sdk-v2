@@ -1,0 +1,19 @@
+{
+  // Standalone typecheck for the examples (not published, not a workspace
+  // package). Resolves the SDK packages against their SOURCE — mirroring
+  // packages/vod/tsconfig.json — so `tsc -p examples/tsconfig.json` proves the
+  // example compiles without first building the packages. Node types come from
+  // core's installed @types/node (this monorepo does not hoist @types to root).
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": ".",
+    "typeRoots": ["../packages/core/node_modules/@types"],
+    "types": ["node"],
+    "paths": {
+      "@byteplus-sdk/core": ["../packages/core/src/index.ts"],
+      "@byteplus-sdk/vod": ["../packages/vod/src/index.ts"]
+    }
+  },
+  "include": ["*.ts"]
+}

@@ -1,0 +1,127 @@
+{
+  "provenance": {
+    "source": "byteplus-python-sdk-v2",
+    "commit": "e98d2e9084265c8a7622073ab308cda8da4d4c47",
+    "frozen_utc": "20250701T123456Z",
+    "invocationId": "00000000-0000-4000-8000-000000000000",
+    "roleSessionName": "00000000000040008000000000000000",
+    "ak": "AKLTtestexampleaccesskey00",
+    "sk": "U0t0ZXN0ZXhhbXBsZXNlY3JldGtleQ==",
+    "region": "ap-southeast-1"
+  },
+  "cases": {
+    "getExecution": {
+      "input": {
+        "runId": "r-123"
+      },
+      "expected": {
+        "method": "GET",
+        "url": "https://vod.ap-southeast-1.byteplusapi.com/",
+        "query": [
+          [
+            "RunId",
+            "r-123"
+          ],
+          [
+            "Action",
+            "GetExecution"
+          ],
+          [
+            "Version",
+            "2025-07-01"
+          ]
+        ],
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "text/plain",
+          "User-Agent": "byteplus-python-sdk-v2/3.0.61",
+          "X-Sdk-Invocation-Id": "00000000-0000-4000-8000-000000000000",
+          "X-Sdk-Request": "attempt=1; max=4",
+          "Host": "vod.ap-southeast-1.byteplusapi.com",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=content-type;host;x-content-sha256;x-date;x-sdk-invocation-id;x-sdk-request, Signature=d93c01337751e3591c50e636fb1e3e71994bc1d550eb6442a254d74189b522a2"
+        },
+        "body": ""
+      }
+    },
+    "startExecution": {
+      "input": {
+        "input": {
+          "type": "vid",
+          "vid": "v-123"
+        }
+      },
+      "expected": {
+        "method": "POST",
+        "url": "https://vod.ap-southeast-1.byteplusapi.com/",
+        "query": [
+          [
+            "Action",
+            "StartExecution"
+          ],
+          [
+            "Version",
+            "2025-07-01"
+          ]
+        ],
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "User-Agent": "byteplus-python-sdk-v2/3.0.61",
+          "X-Sdk-Invocation-Id": "00000000-0000-4000-8000-000000000000",
+          "X-Sdk-Request": "attempt=1; max=4",
+          "Host": "vod.ap-southeast-1.byteplusapi.com",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "a91866546e62841a5394b40bfaeace915a5a9fda3c92dadd8a2b9e0722815296",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=content-type;host;x-content-sha256;x-date;x-sdk-invocation-id;x-sdk-request, Signature=a18c67a8d738e3aeed9b9f4e89dcd56ad1b48c59ac18721f848814807443c237"
+        },
+        "body": "{\"Input\": {\"Type\": \"vid\", \"Vid\": \"v-123\"}}"
+      }
+    },
+    "assumeRole": {
+      "input": {
+        "roleName": "myrole",
+        "accountId": "2100000000"
+      },
+      "expected": {
+        "method": "GET",
+        "url": "https://sts.ap-southeast-1.byteplusapi.com/",
+        "query": [
+          [
+            "DurationSeconds",
+            3600
+          ],
+          [
+            "RoleSessionName",
+            "00000000000040008000000000000000"
+          ],
+          [
+            "RoleTrn",
+            "trn:iam::2100000000:role/myrole"
+          ],
+          [
+            "Action",
+            "AssumeRole"
+          ],
+          [
+            "Version",
+            "2018-01-01"
+          ]
+        ],
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "text/plain",
+          "User-Agent": "byteplus-python-sdk-v2/3.0.61",
+          "X-Sdk-Invocation-Id": "00000000-0000-4000-8000-000000000000",
+          "X-Sdk-Request": "attempt=1; max=3",
+          "Host": "sts.ap-southeast-1.byteplusapi.com",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/sts/request, SignedHeaders=content-type;host;x-content-sha256;x-date;x-sdk-invocation-id;x-sdk-request, Signature=d20a4dd98fd594dac5a2b3a381f186257bf41d6882884355d800a64ed482839a"
+        },
+        "body": ""
+      }
+    }
+  }
+}

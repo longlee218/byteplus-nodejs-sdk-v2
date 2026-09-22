@@ -1,0 +1,371 @@
+{
+  "provenance": {
+    "source": "byteplus-python-sdk-v2",
+    "commit": "e98d2e9084265c8a7622073ab308cda8da4d4c47",
+    "frozen_utc": "20250701T123456Z",
+    "ak": "AKLTtestexampleaccesskey00",
+    "sk": "U0t0ZXN0ZXhhbXBsZXNlY3JldGtleQ==",
+    "region": "ap-southeast-1",
+    "service": "vod",
+    "signingKeyHex": "38a0f0f8c69472cc072c7ae74353caa3873845b2e9a981e21a5b646676a98e7b"
+  },
+  "pctEncode": [
+    {
+      "input": "a b",
+      "expected": "a%20b"
+    },
+    {
+      "input": "x/y",
+      "expected": "x%2Fy"
+    },
+    {
+      "input": "tilde~ok",
+      "expected": "tilde~ok"
+    },
+    {
+      "input": "café",
+      "expected": "caf%C3%A9"
+    },
+    {
+      "input": "A-_.~z",
+      "expected": "A-_.~z"
+    },
+    {
+      "input": "100%",
+      "expected": "100%25"
+    },
+    {
+      "input": "a=b&c",
+      "expected": "a%3Db%26c"
+    }
+  ],
+  "canonicalQuery": [
+    {
+      "input": {
+        "z": "a b",
+        "a": "sp ace",
+        "m": "x/y~z"
+      },
+      "expected": "a=sp%20ace&m=x%2Fy~z&z=a%20b"
+    },
+    {
+      "input": {
+        "Action": "Q",
+        "b": "1",
+        "a": "2"
+      },
+      "expected": "Action=Q&a=2&b=1"
+    }
+  ],
+  "sign": [
+    {
+      "name": "get-no-body",
+      "input": {
+        "path": "/",
+        "method": "GET",
+        "headers": {},
+        "body": "",
+        "postParams": [],
+        "query": {
+          "Action": "GetExecution",
+          "Version": "2025-07-01"
+        },
+        "sessionToken": null
+      },
+      "expected": {
+        "headers": {
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=x-content-sha256;x-date, Signature=874b9a4638eac5b78df16b74667dcbd6a21120f6d57d0a8477ad411a34aea769"
+        },
+        "canonicalRequest": "GET\n/\nAction=GetExecution&Version=2025-07-01\nx-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nx-date:20250701T123456Z\n\nx-content-sha256;x-date\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\n82b6da8e9f9daafec277808017a272c770c7cb8043fb9e0bea0a28bae1083031",
+        "signature": "874b9a4638eac5b78df16b74667dcbd6a21120f6d57d0a8477ad411a34aea769"
+      }
+    },
+    {
+      "name": "post-json-body",
+      "input": {
+        "path": "/",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\"RunId\": \"r-123\", \"N\": 1}",
+        "postParams": [],
+        "query": {
+          "Action": "StartExecution",
+          "Version": "2025-07-01"
+        },
+        "sessionToken": null
+      },
+      "expected": {
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "24d137af142299fd8e25afcdd6d5aac22fd7fae3942b80adbaf13dad585961b2",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=content-type;x-content-sha256;x-date, Signature=b2853dfed828273bdb28b0b3b1786adb3d1eeff71a949de3dfaca3524afdc247"
+        },
+        "canonicalRequest": "POST\n/\nAction=StartExecution&Version=2025-07-01\ncontent-type:application/json\nx-content-sha256:24d137af142299fd8e25afcdd6d5aac22fd7fae3942b80adbaf13dad585961b2\nx-date:20250701T123456Z\n\ncontent-type;x-content-sha256;x-date\n24d137af142299fd8e25afcdd6d5aac22fd7fae3942b80adbaf13dad585961b2",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\na175f3bc31cb040ccd394ef15b08e24b3455cda2a1f8d2f36044cffea878a662",
+        "signature": "b2853dfed828273bdb28b0b3b1786adb3d1eeff71a949de3dfaca3524afdc247"
+      }
+    },
+    {
+      "name": "post-form-params",
+      "input": {
+        "path": "/",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": "",
+        "postParams": [
+          [
+            "A",
+            "1"
+          ],
+          [
+            "B",
+            "two words"
+          ],
+          [
+            "C",
+            "x/y"
+          ]
+        ],
+        "query": {
+          "Action": "DoThing",
+          "Version": "2020-01-01"
+        },
+        "sessionToken": null
+      },
+      "expected": {
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "42229208124f3e32c7388e63b52fb62aa263743ba8964d24d456b3b49f3704a1",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=content-type;x-content-sha256;x-date, Signature=cd20ae171481bf2fc9eb937a7d177438ed213ee8a9647dfa2152cb34e2055ee9"
+        },
+        "canonicalRequest": "POST\n/\nAction=DoThing&Version=2020-01-01\ncontent-type:application/x-www-form-urlencoded\nx-content-sha256:42229208124f3e32c7388e63b52fb62aa263743ba8964d24d456b3b49f3704a1\nx-date:20250701T123456Z\n\ncontent-type;x-content-sha256;x-date\n42229208124f3e32c7388e63b52fb62aa263743ba8964d24d456b3b49f3704a1",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\n32a90e793b062df738b87cac60ac757d8e6bee6014ac7059e9b0c3d1451d3265",
+        "signature": "cd20ae171481bf2fc9eb937a7d177438ed213ee8a9647dfa2152cb34e2055ee9"
+      }
+    },
+    {
+      "name": "with-session-token",
+      "input": {
+        "path": "/",
+        "method": "GET",
+        "headers": {},
+        "body": "",
+        "postParams": [],
+        "query": {
+          "Action": "GetExecution",
+          "Version": "2025-07-01"
+        },
+        "sessionToken": "STStokenexamplevalue"
+      },
+      "expected": {
+        "headers": {
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "X-Security-Token": "STStokenexamplevalue",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=x-content-sha256;x-date;x-security-token, Signature=f40a117acdc7d1fe61ff83f335ecadbd9500fec4376f5a65bfedee3da7db6d3f"
+        },
+        "canonicalRequest": "GET\n/\nAction=GetExecution&Version=2025-07-01\nx-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nx-date:20250701T123456Z\nx-security-token:STStokenexamplevalue\n\nx-content-sha256;x-date;x-security-token\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\n98d74ed47705c1111be3c8d7cde9fb123751ee0153a2efacbceadaad420a1345",
+        "signature": "f40a117acdc7d1fe61ff83f335ecadbd9500fec4376f5a65bfedee3da7db6d3f"
+      }
+    },
+    {
+      "name": "host-port-stripped",
+      "input": {
+        "path": "/",
+        "method": "GET",
+        "headers": {
+          "Host": "open.byteplusapi.com:443"
+        },
+        "body": "",
+        "postParams": [],
+        "query": {
+          "Action": "GetExecution"
+        },
+        "sessionToken": null
+      },
+      "expected": {
+        "headers": {
+          "Host": "open.byteplusapi.com:443",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=host;x-content-sha256;x-date, Signature=793f7e077af9c4640039fce624633b636a175cd170b64c89d715b365a271ec29"
+        },
+        "canonicalRequest": "GET\n/\nAction=GetExecution\nhost:open.byteplusapi.com\nx-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nx-date:20250701T123456Z\n\nhost;x-content-sha256;x-date\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\nb471b7aa0c686b658adf0c1761f320cf2a75dc543a2912abeef45bf664a94f28",
+        "signature": "793f7e077af9c4640039fce624633b636a175cd170b64c89d715b365a271ec29"
+      }
+    },
+    {
+      "name": "query-encoding-and-sort",
+      "input": {
+        "path": "/",
+        "method": "GET",
+        "headers": {},
+        "body": "",
+        "postParams": [],
+        "query": {
+          "z": "a b",
+          "a": "sp ace",
+          "m": "x/y~z",
+          "Action": "Q"
+        },
+        "sessionToken": null
+      },
+      "expected": {
+        "headers": {
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=x-content-sha256;x-date, Signature=8715109ef95fafd206bcae05a5cba87bfb650fed844f18bff090ef32544d0ee3"
+        },
+        "canonicalRequest": "GET\n/\nAction=Q&a=sp%20ace&m=x%2Fy~z&z=a%20b\nx-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nx-date:20250701T123456Z\n\nx-content-sha256;x-date\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\n38dbff4c210a1924043cd1137e648cad80a50b92675c74e8d9d496a70690c08a",
+        "signature": "8715109ef95fafd206bcae05a5cba87bfb650fed844f18bff090ef32544d0ee3"
+      }
+    },
+    {
+      "name": "multiple-x-headers",
+      "input": {
+        "path": "/",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Foo": "foo",
+          "X-Bar": "bar",
+          "X-Aaa": "aaa"
+        },
+        "body": "{\"k\": \"v\"}",
+        "postParams": [],
+        "query": {
+          "Action": "StartExecution"
+        },
+        "sessionToken": null
+      },
+      "expected": {
+        "headers": {
+          "Content-Type": "application/json",
+          "X-Foo": "foo",
+          "X-Bar": "bar",
+          "X-Aaa": "aaa",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "4be281edc378f1c5e5eb9c15f9dbf5a80da2977981850f93553d5d70b75f1626",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=content-type;x-aaa;x-bar;x-content-sha256;x-date;x-foo, Signature=0d56beb930a609f2ea4a45b31a974ecf58f200280471883c9c9dec822c0fe599"
+        },
+        "canonicalRequest": "POST\n/\nAction=StartExecution\ncontent-type:application/json\nx-aaa:aaa\nx-bar:bar\nx-content-sha256:4be281edc378f1c5e5eb9c15f9dbf5a80da2977981850f93553d5d70b75f1626\nx-date:20250701T123456Z\nx-foo:foo\n\ncontent-type;x-aaa;x-bar;x-content-sha256;x-date;x-foo\n4be281edc378f1c5e5eb9c15f9dbf5a80da2977981850f93553d5d70b75f1626",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\n64f225332abc67bd14e89e65170e2e49f3fd204a064fef2e6fe523a25d6fee56",
+        "signature": "0d56beb930a609f2ea4a45b31a974ecf58f200280471883c9c9dec822c0fe599"
+      }
+    },
+    {
+      "name": "empty-path-normalized",
+      "input": {
+        "path": "",
+        "method": "GET",
+        "headers": {},
+        "body": "",
+        "postParams": [],
+        "query": {
+          "Action": "GetExecution"
+        },
+        "sessionToken": null
+      },
+      "expected": {
+        "headers": {
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=x-content-sha256;x-date, Signature=9aa8b1cfc4e8a381f33ec7a174f565a78017901393aaf50889b17870fa4c153c"
+        },
+        "canonicalRequest": "GET\n/\nAction=GetExecution\nx-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nx-date:20250701T123456Z\n\nx-content-sha256;x-date\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\n36fdd14f7a8f2a53315d655cfd58839d845b161b95aa2c3dc6fdc4fc6484bcd1",
+        "signature": "9aa8b1cfc4e8a381f33ec7a174f565a78017901393aaf50889b17870fa4c153c"
+      }
+    },
+    {
+      "name": "content-md5-signed",
+      "input": {
+        "path": "/",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json",
+          "Content-Md5": "1B2M2Y8AsgTpgAmY7PhCfg=="
+        },
+        "body": "{\"k\": \"v\"}",
+        "postParams": [],
+        "query": {
+          "Action": "StartExecution"
+        },
+        "sessionToken": null
+      },
+      "expected": {
+        "headers": {
+          "Content-Type": "application/json",
+          "Content-Md5": "1B2M2Y8AsgTpgAmY7PhCfg==",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "4be281edc378f1c5e5eb9c15f9dbf5a80da2977981850f93553d5d70b75f1626",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=content-md5;content-type;x-content-sha256;x-date, Signature=a48b33ecdc8a65821c872133e265c5db275695e0cb0d9044a97fc57e93b3dbc2"
+        },
+        "canonicalRequest": "POST\n/\nAction=StartExecution\ncontent-md5:1B2M2Y8AsgTpgAmY7PhCfg==\ncontent-type:application/json\nx-content-sha256:4be281edc378f1c5e5eb9c15f9dbf5a80da2977981850f93553d5d70b75f1626\nx-date:20250701T123456Z\n\ncontent-md5;content-type;x-content-sha256;x-date\n4be281edc378f1c5e5eb9c15f9dbf5a80da2977981850f93553d5d70b75f1626",
+        "stringToSign": "HMAC-SHA256\n20250701T123456Z\n20250701/ap-southeast-1/vod/request\n20bdac3a630153f9d0810be3dfefc7c2e6d55b0059aee13a42bdec53fadb5727",
+        "signature": "a48b33ecdc8a65821c872133e265c5db275695e0cb0d9044a97fc57e93b3dbc2"
+      }
+    }
+  ],
+  "signUrl": [
+    {
+      "name": "presign-with-host",
+      "input": {
+        "path": "/",
+        "method": "GET",
+        "query": {
+          "Action": "GetExecution",
+          "Version": "2025-07-01"
+        },
+        "host": "open.byteplusapi.com",
+        "sessionToken": null
+      },
+      "expected": {
+        "queryString": "Action=GetExecution&Version=2025-07-01&X-Algorithm=HMAC-SHA256&X-Credential=AKLTtestexampleaccesskey00%2F20250701%2Fap-southeast-1%2Fvod%2Frequest&X-Date=20250701T123456Z&X-NotSignBody=&X-Signature=7f570eff777b023dd4c933550ac3564981eca7e4d2a52f35d80463f3088f6ea8&X-SignedHeaders=host&X-SignedQueries=Action%3BVersion%3BX-Algorithm%3BX-Credential%3BX-Date%3BX-NotSignBody%3BX-SignedHeaders%3BX-SignedQueries"
+      }
+    },
+    {
+      "name": "presign-no-host",
+      "input": {
+        "path": "/",
+        "method": "GET",
+        "query": {
+          "Action": "GetExecution",
+          "Version": "2025-07-01"
+        },
+        "host": null,
+        "sessionToken": null
+      },
+      "expected": {
+        "queryString": "Action=GetExecution&Version=2025-07-01&X-Algorithm=HMAC-SHA256&X-Credential=AKLTtestexampleaccesskey00%2F20250701%2Fap-southeast-1%2Fvod%2Frequest&X-Date=20250701T123456Z&X-NotSignBody=&X-Signature=bc99b8720cf5162d0edb41eae4ab25122bb6805b153fa2d74a294c0c92046131&X-SignedHeaders=&X-SignedQueries=Action%3BVersion%3BX-Algorithm%3BX-Credential%3BX-Date%3BX-NotSignBody%3BX-SignedHeaders%3BX-SignedQueries"
+      }
+    },
+    {
+      "name": "presign-with-token",
+      "input": {
+        "path": "/",
+        "method": "GET",
+        "query": {
+          "Action": "GetExecution"
+        },
+        "host": "open.byteplusapi.com",
+        "sessionToken": "STStokenpresign"
+      },
+      "expected": {
+        "queryString": "Action=GetExecution&X-Algorithm=HMAC-SHA256&X-Credential=AKLTtestexampleaccesskey00%2F20250701%2Fap-southeast-1%2Fvod%2Frequest&X-Date=20250701T123456Z&X-NotSignBody=&X-Security-Token=STStokenpresign&X-Signature=2e1d221160d33cd26bf8847dd8e74f894f1d21a6ec4196fb62c55de8cd1f0744&X-SignedHeaders=host&X-SignedQueries=Action%3BX-Algorithm%3BX-Credential%3BX-Date%3BX-NotSignBody%3BX-SignedHeaders%3BX-SignedQueries"
+      }
+    }
+  ]
+}

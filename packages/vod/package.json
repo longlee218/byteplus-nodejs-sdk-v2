@@ -1,0 +1,44 @@
+{
+  "name": "@byteplus-sdk/vod",
+  "version": "0.0.0",
+  "description": "BytePlus Node.js SDK v2 — VOD service (vod20250701)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/byteplus-sdk/byteplus-node-sdk-v2.git",
+    "directory": "packages/vod"
+  },
+  "homepage": "https://github.com/byteplus-sdk/byteplus-node-sdk-v2/tree/main/packages/vod#readme",
+  "bugs": {
+    "url": "https://github.com/byteplus-sdk/byteplus-node-sdk-v2/issues"
+  },
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@byteplus-sdk/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0"
+  }
+}
