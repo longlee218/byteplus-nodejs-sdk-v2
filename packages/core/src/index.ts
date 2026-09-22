@@ -4,7 +4,7 @@
 export const CORE_PACKAGE = "@byteplus-sdk/core";
 
 /** Semver of the core package at build time. */
-export const version = "0.0.0";
+export const version = "0.1.0";
 
 export {
   signV4,

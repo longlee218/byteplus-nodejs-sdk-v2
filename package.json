@@ -1,6 +1,6 @@
 {
   "name": "byteplus-sdk-v2-workspace",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "BytePlus Node.js SDK v2 (TypeScript port) — monorepo",
   "engines": {

@@ -1,6 +1,6 @@
 {
   "name": "@byteplus-sdk/vod",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "BytePlus Node.js SDK v2 — VOD service (vod20250701)",
   "license": "Apache-2.0",
   "repository": {

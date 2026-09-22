@@ -1,6 +1,6 @@
 {
   "name": "@byteplus-sdk/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "BytePlus Node.js SDK v2 — core engine (auth, signing, transport)",
   "license": "Apache-2.0",
   "repository": {

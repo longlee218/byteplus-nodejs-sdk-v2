@@ -68,6 +68,6 @@ export class Configuration {
     this.clock = opts.clock;
     this.sleep = opts.sleep ?? realSleep;
     this.invocationId = opts.invocationId ?? (() => randomUUID());
-    this.userAgent = opts.userAgent ?? "byteplus-node-sdk-v2/0.0.0";
+    this.userAgent = opts.userAgent ?? "byteplus-node-sdk-v2/0.1.0";
   }
 }
