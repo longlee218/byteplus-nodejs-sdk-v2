@@ -11,6 +11,7 @@ import {
   type HttpRequest,
   type HttpResponse,
 } from "../src/index.js";
+import { startExecutionMetas } from "../../vod/src/models/start-execution-metas.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const golden = JSON.parse(readFileSync(resolve(here, "fixtures/request-vectors.json"), "utf8")) as Golden;
@@ -40,6 +41,15 @@ const vodRegistry = (): ModelRegistry => {
   r.register("GetExecutionRequest", { attributeMap: { runId: "RunId" }, swaggerTypes: { runId: "str" } });
   r.register("StartExecutionRequest", { attributeMap: { input: "Input" }, swaggerTypes: { input: "InputForStartExecutionInput" } });
   r.register("InputForStartExecutionInput", { attributeMap: { type: "Type", vid: "Vid" }, swaggerTypes: { type: "str", vid: "str" } });
+  return r;
+};
+
+// Full VOD input tree — the SHIPPED metas from @byteplus-sdk/vod (type-only core
+// import erased at runtime), proving the deployed model set renames every nested
+// field byte-for-byte, not a test-local approximation.
+const vodFullRegistry = (): ModelRegistry => {
+  const r = new ModelRegistry();
+  for (const [name, meta] of Object.entries(startExecutionMetas)) r.register(name, meta);
   return r;
 };
 
@@ -101,6 +111,21 @@ describe("differential parity vs the Python SDK (whole signed request)", () => {
       requestType: "StartExecutionRequest",
     });
     assertParity(rec.requests[0] as HttpRequest, golden.cases["startExecution"]!.expected);
+  });
+
+  it("StartExecution (deeply nested) matches Python byte-for-byte — every depth PascalCase", async () => {
+    const rec = recorder([{ status: 200, headers: {}, body: JSON.stringify({ ResponseMetadata: {}, Result: {} }) }]);
+    await new ApiClient(config(rec, vodFullRegistry())).callApi({
+      resourcePath: "/StartExecution/2025-07-01/vod/post/application_json/",
+      method: "POST",
+      headerParams: { "Content-Type": "application/json", Accept: "application/json" },
+      body: golden.cases["startExecutionNested"]!.input,
+      requestType: "StartExecutionRequest",
+    });
+    const expected = golden.cases["startExecutionNested"]!.expected;
+    // The deep rename must land: no camelCase key survives to the wire.
+    expect(expected.body).toContain('"Operation": {"Task": {"Enhance": {"Modules"');
+    assertParity(rec.requests[0] as HttpRequest, expected);
   });
 
   it("AssumeRole (STS, signed) matches Python byte-for-byte", async () => {

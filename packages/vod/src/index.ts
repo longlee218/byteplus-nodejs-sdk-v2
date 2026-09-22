@@ -19,22 +19,9 @@ export function coreDependency(): string {
 export { VodApi } from "./vod-api.js";
 export { registerVodModels } from "./models/register.js";
 
-export {
-  startExecutionMetas,
-  type StartExecutionRequest,
-  type StartExecutionResponse,
-  type ControlForStartExecutionInput,
-  type InputForStartExecutionInput,
-  type OperationForStartExecutionInput,
-} from "./models/start-execution.js";
-
-export {
-  getExecutionMetas,
-  type GetExecutionRequest,
-  type GetExecutionResponse,
-  type ControlForGetExecutionOutput,
-  type InputForGetExecutionOutput,
-  type MetaForGetExecutionOutput,
-  type OperationForGetExecutionOutput,
-  type OutputForGetExecutionOutput,
-} from "./models/get-execution.js";
+// All VOD model interfaces (StartExecution input tree + GetExecution output
+// tree + the four request/response wrappers) and their registered metas.
+export * from "./models/start-execution.js";
+export * from "./models/get-execution.js";
+export { startExecutionMetas } from "./models/start-execution-metas.js";
+export { getExecutionMetas } from "./models/get-execution-metas.js";

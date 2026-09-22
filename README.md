@@ -1,175 +1,171 @@
-# BytePlus SDK for Node.js (v2)
+# BytePlus SDK for Node.js
 
-A TypeScript port of the [BytePlus Python SDK v2](https://github.com/byteplus-sdk/byteplus-python-sdk-v2),
-published as a monorepo of scoped, dual **ESM + CommonJS** packages. Request
-signing and credential resolution are **byte-for-byte compatible** with the
-Python SDK — verified by golden requests captured from the Python SDK itself.
+A TypeScript SDK for [BytePlus](https://www.byteplus.com/), ported from the
+official [BytePlus Python SDK v2](https://github.com/byteplus-sdk/byteplus-python-sdk-v2).
+It is published as a monorepo of small, scoped packages so you install only the
+services you use, and every package ships as **dual ESM + CommonJS** with full
+type declarations.
 
-| Package | Description |
-| --- | --- |
-| [`@byteplus-sdk/core`](./packages/core) | SignatureV4 signing, credential providers, HTTP transport pipeline |
-| [`@byteplus-sdk/vod`](./packages/vod) | VOD service client (`vod20250701`): `StartExecution`, `GetExecution` |
+Request signing and credential resolution are **byte-for-byte compatible** with
+the Python SDK — verified by golden requests captured from the Python SDK itself,
+not merely re-implemented.
 
-## Table of Contents
+## Features
 
-- [Requirements](#requirements)
-- [Install](#install)
-- [Usage](#usage)
-- [Credentials](#credentials)
-- [Endpoint configuration](#endpoint-configuration)
-- [Transport](#transport)
-- [Timeouts](#timeouts)
-- [Retries](#retries)
-- [Error handling](#error-handling)
-- [Environment variables](#environment-variables)
-- [Compatibility with the Python SDK](#compatibility-with-the-python-sdk)
-- [Development](#development)
+- 🔐 **BytePlus SignatureV4** request signing — identical on the wire to the Python SDK.
+- 🔑 **Full credential model** — static keys, environment, byteplus-cli config, STS
+  (AssumeRole / OIDC / SAML), ECS instance role, and an automatic default chain.
+- 🌐 **Correct endpoint resolution** — regional, global, and China-region services.
+- ♻️ **Built-in retries** with exponential backoff + jitter.
+- 🧩 **Typed models** for every service, with idiomatic camelCase mapped to the
+  BytePlus wire format.
+- 📦 **Dual ESM + CommonJS**, `import` and `require` both supported. No runtime dependencies.
+
+## Packages
+
+| Package | Description | Version |
+| --- | --- | --- |
+| [`@byteplus-sdk/core`](./packages/core) | Foundation: signing, credential providers, HTTP transport. Required by every service package. | `0.1.0` |
+| [`@byteplus-sdk/vod`](./packages/vod) | VOD service client (`vod20250701`). | `0.1.0` |
+
+> More BytePlus service packages will be published under the `@byteplus-sdk/*`
+> scope over time. Each depends on `@byteplus-sdk/core`.
 
 ## Requirements
 
 - **Node.js >= 18** (the default HTTP client uses the global `fetch`).
-- TypeScript is optional; typings ship with every package.
+- TypeScript is optional — typings are bundled with every package.
 
-## Install
+## Installation
+
+Install `@byteplus-sdk/core` plus the service package(s) you need. For example,
+to use VOD:
 
 ```sh
-npm install @byteplus-sdk/vod @byteplus-sdk/core
-# or: pnpm add / yarn add
+# npm
+npm install @byteplus-sdk/core @byteplus-sdk/vod
+
+# pnpm
+pnpm add @byteplus-sdk/core @byteplus-sdk/vod
+
+# yarn
+yarn add @byteplus-sdk/core @byteplus-sdk/vod
 ```
 
-Both `import` (ESM) and `require` (CommonJS) are supported.
+`@byteplus-sdk/core` is a dependency of every service package; installing it
+explicitly keeps its version under your control. If you only need signing and
+credential resolution (e.g. to build your own client), install `@byteplus-sdk/core`
+on its own.
 
-## Usage
+## Quick start
+
+Every service client is constructed from a `Configuration` (from
+`@byteplus-sdk/core`) that carries the region and a credential source. Using VOD
+as the example:
 
 ```ts
 import { Configuration, DefaultCredentialProvider } from "@byteplus-sdk/core";
 import { VodApi } from "@byteplus-sdk/vod";
 
-const api = new VodApi(
-  new Configuration({
-    region: "ap-southeast-1",
-    credentialProvider: new DefaultCredentialProvider(), // resolves credentials from env/CLI/ECS
-  }),
-);
+const config = new Configuration({
+  region: "ap-southeast-1",
+  credentialProvider: new DefaultCredentialProvider(), // reads env / CLI / ECS
+});
 
-const started = await api.startExecution({ input: { type: "vid", vid: "your-vid" } });
-const execution = await api.getExecution({ runId: started.runId! });
+const vod = new VodApi(config);
+
+const started = await vod.startExecution({ input: { type: "vid", vid: "your-vid" } });
+const execution = await vod.getExecution({ runId: started.runId! });
 ```
 
-## Credentials
+Provide credentials via the environment (never hard-code them):
 
-Credentials are **never hard-coded**. Supply them one of the ways below (this
-mirrors the Python SDK's credential model, including the env var and CLI config
-key names). Every provider implements the same `CredentialProvider` interface.
+```sh
+export BYTEPLUS_ACCESSKEY=...
+export BYTEPLUS_SECRETKEY=...
+```
 
-### Static
+CommonJS works the same way with `require`:
+
+```js
+const { Configuration, DefaultCredentialProvider } = require("@byteplus-sdk/core");
+const { VodApi } = require("@byteplus-sdk/vod");
+```
+
+## Configuration
+
+The sections below apply to every service client, since they all share
+`@byteplus-sdk/core`.
+
+### Credentials
+
+Credentials are supplied through a `CredentialProvider`. The env var and
+byteplus-cli config key names match the Python SDK exactly.
+
+| Provider | Source |
+| --- | --- |
+| `StaticCredentialProvider(ak, sk, sessionToken?)` | Inline keys |
+| `EnvironmentVariableCredentialProvider` | `BYTEPLUS_ACCESSKEY`/`BYTEPLUS_ACCESS_KEY`, `BYTEPLUS_SECRETKEY`/`BYTEPLUS_SECRET_KEY`, `BYTEPLUS_SESSION_TOKEN` |
+| `CLIConfigCredentialProvider` | `~/.byteplus/config.json` (modes `ak`, `ramrolearn`, `oidc`, `ecsrole`) |
+| `StsCredentialProvider` | STS `AssumeRole` (signed with your keys) |
+| `StsOidcCredentialProvider` / `StsSamlCredentialProvider` | Federated identity (`BYTEPLUS_OIDC_*`) |
+| `EcsRoleCredentialProvider` | BytePlus ECS instance metadata (IMDS) |
+| `DefaultCredentialProvider` | Chain: environment → STS OIDC → cli-config → ECS role |
 
 ```ts
 import { StaticCredentialProvider } from "@byteplus-sdk/core";
-new Configuration({ credentialProvider: new StaticCredentialProvider(ak, sk, sessionToken) });
+new Configuration({ credentialProvider: new StaticCredentialProvider(ak, sk) });
 ```
 
-Or set `ak` / `sk` directly on `Configuration`.
+Temporary (STS/ECS) credentials refresh automatically before they expire.
 
-### Environment variables
+### Endpoint
 
-```ts
-import { EnvironmentVariableCredentialProvider } from "@byteplus-sdk/core";
-```
+- **Region** (default `ap-southeast-1`) resolves the host from a per-service
+  table, matching the Python SDK — including global services and China regions.
+- **Custom host**: `new Configuration({ host: "open.example.com" })` (or a full
+  `https://…` URL) is used verbatim.
+- **Dual stack**: `new Configuration({ useDualStack: true })`.
 
-Reads `BYTEPLUS_ACCESSKEY` (or `BYTEPLUS_ACCESS_KEY`), `BYTEPLUS_SECRETKEY` (or
-`BYTEPLUS_SECRET_KEY`), and optionally `BYTEPLUS_SESSION_TOKEN`.
+### Transport
 
-### byteplus-cli config file
-
-```ts
-import { CLIConfigCredentialProvider } from "@byteplus-sdk/core";
-```
-
-Reads `~/.byteplus/config.json` (override with `BYTEPLUS_CLI_CONFIG_FILE`),
-selecting the profile from `BYTEPLUS_PROFILE` → `config.current` → `default`.
-Supported profile `mode`s: `ak`, `ramrolearn` (STS AssumeRole), `oidc`,
-`ecsrole`.
-
-### STS / federated / instance role
-
-```ts
-import {
-  StsCredentialProvider,        // AssumeRole (signed with your ak/sk)
-  StsOidcCredentialProvider,    // AssumeRoleWithOIDC (env-driven, BYTEPLUS_OIDC_*)
-  StsSamlCredentialProvider,    // AssumeRoleWithSAML
-  EcsRoleCredentialProvider,    // BytePlus ECS instance metadata (IMDS)
-} from "@byteplus-sdk/core";
-```
-
-Temporary credentials refresh automatically before expiry.
-
-### Default chain
-
-```ts
-import { DefaultCredentialProvider } from "@byteplus-sdk/core";
-new Configuration({ credentialProvider: new DefaultCredentialProvider() });
-```
-
-Tries, in order (matching the Python SDK): **environment → STS OIDC → cli-config
-→ ECS role** (ECS is skipped when `BYTEPLUS_ECS_METADATA_DISABLED=true`). The
-first provider that resolves wins and is cached.
-
-## Endpoint configuration
-
-- **Region** (default `ap-southeast-1`): `new Configuration({ region: "..." })`
-  resolves the host as `<service>.<region>.byteplusapi.com`.
-- **Custom host override**: `new Configuration({ host: "open.example.com" })` (or
-  a full `https://…` URL) is used verbatim.
-- **Dual stack**: `new Configuration({ useDualStack: true })` uses the
-  `.byteplus-api.com` suffix (also enabled by `BYTEPLUS_ENABLE_DUALSTACK=true`).
-
-## Transport
-
-- **Scheme** defaults to `https` (`new Configuration({ scheme: "http" })` to
-  override — not recommended).
-- **Injectable HTTP client**: the default is a `fetch`-based client; pass your
-  own to add proxies, connection pooling, or custom TLS:
+- HTTPS by default. Override the HTTP layer with your own client for proxies,
+  connection pooling, or custom TLS:
   ```ts
   new Configuration({ httpClient: async (req) => ({ status, headers, body }) });
   ```
-  Proxy and connection-pool tuning are **not** built into the default client —
-  supply a custom `httpClient` if you need them.
+  Proxy/pool/TLS tuning is not built into the default `fetch` client — supply a
+  custom `httpClient` if you need it.
 
-## Timeouts
+### Timeouts
 
-`connectTimeoutMs` and `readTimeoutMs` (both default `30000`) are configuration
-fields. **Note:** the default `fetch` client does not yet enforce them — honor
-them in a custom `httpClient` (e.g. via `AbortController`) if you need request
-timeouts today.
+`connectTimeoutMs` / `readTimeoutMs` (default `30000`) are configuration fields.
+The default `fetch` client does not yet enforce them — apply them in a custom
+`httpClient` (e.g. via `AbortController`) if you need request timeouts today.
 
-## Retries
+### Retries
 
-Enabled by default. `maxRetries` (default `3`, i.e. up to 4 attempts) retries
-transient failures — HTTP `429/500/502/503/504` and network errors — with
-exponential backoff plus jitter. Each attempt is re-signed. Set
-`new Configuration({ maxRetries: 0 })` to disable.
+Enabled by default: `maxRetries` (default `3`) retries `429`/`5xx` and network
+errors with exponential backoff + jitter, re-signing each attempt. Set
+`maxRetries: 0` to disable.
 
-## Error handling
+### Error handling
 
-Calls throw an `ApiException` carrying `status`, the reason, and the raw body:
+Calls throw an `ApiException` carrying `status`, a message, and the raw body.
+BytePlus returns some errors with HTTP 200 and a `ResponseMetadata.Error`; those
+are surfaced as an `ApiException` too.
 
 ```ts
 import { ApiException } from "@byteplus-sdk/core";
 
 try {
-  await api.getExecution({ runId });
+  await vod.getExecution({ runId });
 } catch (err) {
-  if (err instanceof ApiException) {
-    console.error(err.status, err.message, err.body);
-  }
+  if (err instanceof ApiException) console.error(err.status, err.message, err.body);
 }
 ```
 
-BytePlus returns some errors with HTTP 200 and an error in `ResponseMetadata`;
-the SDK surfaces those as an `ApiException` too (status `200`).
-
-## Environment variables
+### Environment variables
 
 | Variable | Purpose |
 | --- | --- |
@@ -184,35 +180,27 @@ the SDK surfaces those as an `ApiException` too (status `200`).
 | `BYTEPLUS_OIDC_ROLE_TRN` / `BYTEPLUS_OIDC_TOKEN_FILE` | OIDC role trn / token file |
 | `BYTEPLUS_OIDC_ROLE_SESSION_NAME` / `BYTEPLUS_OIDC_ROLE_POLICY` | OIDC session name / policy |
 | `BYTEPLUS_OIDC_STS_ENDPOINT` | OIDC STS endpoint override |
-| `BYTEPLUS_REGION` | Region used by the runnable example |
 
 ## Compatibility with the Python SDK
 
-The signed request this SDK sends is byte-for-byte identical to the Python SDK's
-for the same inputs. This is proven, not asserted: `packages/core` ships golden
-requests captured from the actual Python SDK (`StartExecution`, `GetExecution`,
-`AssumeRole`) — including the SignatureV4 signature, `X-Sdk-*` headers, and the
-`json.dumps`-compatible body — and the test suite fails if the Node output drifts.
-
-Reference commit of the Python SDK: `e98d2e9`.
+The request this SDK sends is byte-for-byte identical to the Python SDK's for the
+same inputs. This is proven, not asserted: `@byteplus-sdk/core` ships golden
+requests captured from the actual Python SDK (including the SignatureV4
+signature, `X-Sdk-*` headers, and the `json.dumps`-compatible PascalCase body),
+and the test suite fails if the Node output drifts. Reference Python SDK commit:
+`e98d2e9`.
 
 ## Development
 
 ```sh
 pnpm install
 pnpm run build       # tsup: CJS + ESM + d.ts for every package
-pnpm run typecheck   # per-package tsc + the example
-pnpm run test        # build, then vitest (live smoke skipped without credentials)
+pnpm run typecheck
+pnpm run test        # build, then vitest
 ```
 
-### Runnable example & live smoke
-
-- [`examples/vod-execution.ts`](./examples/vod-execution.ts) — starts a VOD
-  execution and polls it; reads credentials from the environment. Run:
-  `pnpm dlx tsx examples/vod-execution.ts`.
-- `packages/vod/test/live.smoke.test.ts` hits real BytePlus VOD and is **skipped**
-  unless `BYTEPLUS_ACCESSKEY` / `BYTEPLUS_SECRETKEY` are set.
+A runnable example lives at [`examples/vod-execution.ts`](./examples/vod-execution.ts).
 
 ## License
 
-Apache-2.0. See [LICENSE](./LICENSE).
+[Apache-2.0](./LICENSE).

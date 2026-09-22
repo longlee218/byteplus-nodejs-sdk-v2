@@ -1,9 +1,10 @@
 // Registers every VOD model's ModelMeta into a ModelRegistry so the core
-// serializer/deserializer can rename fields snake<->Pascal by type name.
+// serializer/deserializer can rename fields camelCase<->PascalCase by type name,
+// recursing into nested models and list[...] at every depth (decision 0100).
 
 import type { ModelRegistry } from "@byteplus-sdk/core";
-import { startExecutionMetas } from "./start-execution.js";
-import { getExecutionMetas } from "./get-execution.js";
+import { startExecutionMetas } from "./start-execution-metas.js";
+import { getExecutionMetas } from "./get-execution-metas.js";
 
 const vodMetas = { ...startExecutionMetas, ...getExecutionMetas };
 

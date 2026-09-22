@@ -48,7 +48,12 @@ export {
 } from "./transport/registry.js";
 export { parseResourcePath, reqToParams, buildRequest } from "./transport/build.js";
 export { pyJsonStringify } from "./transport/py-json.js";
-export { resolveEndpoint } from "./transport/endpoint.js";
+export {
+  resolveEndpoint,
+  ServiceEndpointInfoMissingError,
+  type ResolvedEndpoint,
+} from "./transport/endpoint.js";
+export { type ServiceEndpointInfo } from "./transport/endpoint-table.js";
 export { isRetryableStatus, backoffDelayMs } from "./transport/retry.js";
 export {
   type HttpClient,

@@ -1,6 +1,7 @@
 import type { CredentialProvider } from "../auth/types.js";
 import type { HttpClient } from "./http.js";
 import { fetchHttpClient } from "./http.js";
+import type { ServiceEndpointInfo } from "./endpoint-table.js";
 import type { ModelRegistry } from "./registry.js";
 import { defaultRegistry } from "./registry.js";
 import { realSleep } from "./retry.js";
@@ -15,6 +16,8 @@ export interface ConfigurationOptions {
   host?: string;
   scheme?: string;
   useDualStack?: boolean;
+  /** Per-service endpoint overrides, keyed by service code (Python `custom_endpoints`). */
+  customEndpoints?: Record<string, ServiceEndpointInfo>;
   connectTimeoutMs?: number;
   readTimeoutMs?: number;
   maxRetries?: number;
@@ -40,6 +43,7 @@ export class Configuration {
   host?: string;
   scheme: string;
   useDualStack?: boolean;
+  customEndpoints?: Record<string, ServiceEndpointInfo>;
   connectTimeoutMs: number;
   readTimeoutMs: number;
   maxRetries: number;
@@ -59,6 +63,7 @@ export class Configuration {
     this.host = opts.host;
     this.scheme = opts.scheme ?? "https";
     this.useDualStack = opts.useDualStack;
+    this.customEndpoints = opts.customEndpoints;
     this.connectTimeoutMs = opts.connectTimeoutMs ?? 30000;
     this.readTimeoutMs = opts.readTimeoutMs ?? 30000;
     this.maxRetries = opts.maxRetries ?? 3;

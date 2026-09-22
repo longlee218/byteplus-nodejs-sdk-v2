@@ -79,6 +79,75 @@
         "body": "{\"Input\": {\"Type\": \"vid\", \"Vid\": \"v-123\"}}"
       }
     },
+    "startExecutionNested": {
+      "input": {
+        "control": {
+          "clientToken": "ct-1",
+          "priority": 5
+        },
+        "input": {
+          "type": "vid",
+          "vid": "v-123"
+        },
+        "operation": {
+          "type": "Enhance",
+          "task": {
+            "type": "MoE",
+            "enhance": {
+              "type": "video",
+              "modules": [
+                {
+                  "type": "denoise"
+                },
+                {
+                  "type": "sharpen"
+                }
+              ],
+              "moeEnhance": {
+                "config": "cfg",
+                "target": {
+                  "res": "1080p",
+                  "resLimit": 1080,
+                  "bitrate": 8000,
+                  "fps": 29.97,
+                  "scaleRatio": 1.5
+                },
+                "videoStrategy": {
+                  "repairStrength": 2,
+                  "repairStyle": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "expected": {
+        "method": "POST",
+        "url": "https://vod.ap-southeast-1.byteplusapi.com/",
+        "query": [
+          [
+            "Action",
+            "StartExecution"
+          ],
+          [
+            "Version",
+            "2025-07-01"
+          ]
+        ],
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "User-Agent": "byteplus-python-sdk-v2/3.0.61",
+          "X-Sdk-Invocation-Id": "00000000-0000-4000-8000-000000000000",
+          "X-Sdk-Request": "attempt=1; max=4",
+          "Host": "vod.ap-southeast-1.byteplusapi.com",
+          "X-Date": "20250701T123456Z",
+          "X-Content-Sha256": "d0abbd15f93069c93f75635e0eead094bedd0e978bcab52c86efa452545de48e",
+          "Authorization": "HMAC-SHA256 Credential=AKLTtestexampleaccesskey00/20250701/ap-southeast-1/vod/request, SignedHeaders=content-type;host;x-content-sha256;x-date;x-sdk-invocation-id;x-sdk-request, Signature=cbd4d8323f359e1cb1c94d4be7c906561791ca679848df00ef7c76d9e6847c4d"
+        },
+        "body": "{\"Control\": {\"ClientToken\": \"ct-1\", \"Priority\": 5}, \"Input\": {\"Type\": \"vid\", \"Vid\": \"v-123\"}, \"Operation\": {\"Task\": {\"Enhance\": {\"Modules\": [{\"Type\": \"denoise\"}, {\"Type\": \"sharpen\"}], \"MoeEnhance\": {\"Config\": \"cfg\", \"Target\": {\"Bitrate\": 8000, \"Fps\": 29.97, \"Res\": \"1080p\", \"ResLimit\": 1080, \"ScaleRatio\": 1.5}, \"VideoStrategy\": {\"RepairStrength\": 2, \"RepairStyle\": 1}}, \"Type\": \"video\"}, \"Type\": \"MoE\"}, \"Type\": \"Enhance\"}}"
+      }
+    },
     "assumeRole": {
       "input": {
         "roleName": "myrole",

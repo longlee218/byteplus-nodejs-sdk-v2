@@ -66,21 +66,21 @@ describe("vod model $meta round-trip", () => {
     expect(deserializeByType({ RunId: "r-1" }, "StartExecutionResponse", reg)).toEqual({ runId: "r-1" });
   });
 
-  it("deserializes the full GetExecutionResponse scalar+container fields", () => {
+  it("deserializes the full GetExecutionResponse scalar + nested container fields", () => {
     const reg = freshRegistry();
-    const wire = { Code: "0", RunId: "r-2", Status: "done", Output: { Foo: 1 } };
+    const wire = { Code: "0", RunId: "r-2", Status: "done", Output: { Type: "convert", Task: { Type: "t" } } };
     expect(deserializeByType(wire, "GetExecutionResponse", reg)).toEqual({
       code: "0",
       runId: "r-2",
       status: "done",
-      output: { Foo: 1 }, // nested container passes through verbatim
+      output: { type: "convert", task: { type: "t" } }, // nested output tree renamed recursively
     });
   });
 
-  it("renames the StartExecutionRequest top-level container keys", () => {
+  it("renames StartExecutionRequest nested container keys recursively (no passthrough)", () => {
     const reg = freshRegistry();
-    expect(serializeByType({ input: { Foo: 1 } }, "StartExecutionRequest", reg)).toEqual({
-      Input: { Foo: 1 },
+    expect(serializeByType({ input: { type: "vid", vid: "v-1" } }, "StartExecutionRequest", reg)).toEqual({
+      Input: { Type: "vid", Vid: "v-1" },
     });
   });
 });
@@ -89,7 +89,7 @@ describe("VodApi via injected HttpClient", () => {
   it("startExecution: signed POST json to the StartExecution resource path", async () => {
     const rec = recorder([ok({ RunId: "r-1" })]);
     const api = new VodApi(cfg(rec, freshRegistry()));
-    const res: StartExecutionResponse = await api.startExecution({ input: { Foo: 1 } });
+    const res: StartExecutionResponse = await api.startExecution({ input: { type: "vid", vid: "v-1" } });
 
     const req = rec.requests[0] as HttpRequest;
     expect(req.method).toBe("POST");
@@ -98,7 +98,7 @@ describe("VodApi via injected HttpClient", () => {
     );
     expect(req.headers["Authorization"]).toMatch(/^HMAC-SHA256 Credential=AKdummy\//);
     expect(req.headers["Host"]).toBe("vod.ap-southeast-1.byteplusapi.com");
-    expect(req.body).toBe('{"Input": {"Foo": 1}}'); // Python json.dumps spacing (parity, US-008)
+    expect(req.body).toBe('{"Input": {"Type": "vid", "Vid": "v-1"}}'); // nested rename + Python json.dumps spacing
     expect(res).toEqual({ runId: "r-1" });
     expect(JSON.stringify(req)).not.toContain("SKdummy");
   });
