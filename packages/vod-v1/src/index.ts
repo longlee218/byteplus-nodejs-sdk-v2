@@ -9,9 +9,12 @@ export { VodV1 } from "./vod-v1.js";
 export { VodV1Client, type VodV1Options } from "./client.js";
 export { VodPlaybackV1 } from "./services/playback.js";
 export { VodDrmV1 } from "./services/drm.js";
+export { VodUploadV1 } from "./services/upload.js";
 export * from "./models/common.js";
+export * from "./models/business.js";
 export * from "./models/playback.js";
 export * from "./models/drm.js";
+export * from "./models/upload.js";
 export {
   VOD_V1_API_INFO,
   VOD_V1_OP_COUNT,

@@ -6,6 +6,7 @@ import { createHmac } from "node:crypto";
 import { getSigningKey, pyJsonStringify } from "@byteplus-sdk/core";
 import type { VodV1Client } from "../client.js";
 import { base64, withExpires } from "./token-util.js";
+import { rpcGet } from "./rpc.js";
 import type {
   GetPlayInfoRequest,
   GetPlayInfoResponse,
@@ -32,25 +33,20 @@ export class VodPlaybackV1 {
 
   // ---- RPC ops -------------------------------------------------------------
 
-  /** GET RPC: sign, send, parse the full typed `{ResponseMetadata, Result}`. */
-  private async rpc<T>(action: string, req: object): Promise<T> {
-    return JSON.parse(await this.client.get(action, req as Record<string, unknown>)) as T;
-  }
-
   getPlayInfo(req: GetPlayInfoRequest): Promise<GetPlayInfoResponse> {
-    return this.rpc("GetPlayInfo", req);
+    return rpcGet(this.client, "GetPlayInfo", req);
   }
 
   getPrivateDrmPlayAuth(req: GetPrivateDrmPlayAuthRequest): Promise<GetPrivateDrmPlayAuthResponse> {
-    return this.rpc("GetPrivateDrmPlayAuth", req);
+    return rpcGet(this.client, "GetPrivateDrmPlayAuth", req);
   }
 
   createHlsDecryptionKey(req: CreateHlsDecryptionKeyRequest): Promise<CreateHlsDecryptionKeyResponse> {
-    return this.rpc("CreateHlsDecryptionKey", req);
+    return rpcGet(this.client, "CreateHlsDecryptionKey", req);
   }
 
   getHlsDecryptionKey(req: GetHlsDecryptionKeyRequest): Promise<GetHlsDecryptionKeyResponse> {
-    return this.rpc("GetHlsDecryptionKey", req);
+    return rpcGet(this.client, "GetHlsDecryptionKey", req);
   }
 
   // ---- token builders (local, no network) ---------------------------------
