@@ -36,6 +36,8 @@ export * from "./models/space.js";
 export { VodCdnV1 } from "./services/cdn.js";
 export * from "./models/cdn.js";
 export * from "./models/cdn-data.js";
+export { VodCallbackV1 } from "./services/callback.js";
+export * from "./models/callback.js";
 export {
   VOD_V1_API_INFO,
   VOD_V1_OP_COUNT,
