@@ -6,3 +6,8 @@ export interface GetDrmLicenseRequest {
   Kid?: string;
   ThirdPartyDrmType?: string;
 }
+
+/** `getFailPlayCertUrl` takes a bare CertId string; this type is for ergonomics. */
+export interface GetFairPlayCertRequest {
+  CertId?: string;
+}

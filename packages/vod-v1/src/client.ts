@@ -18,6 +18,7 @@ import {
 } from "@byteplus-sdk/core";
 import { VOD_V1_API_INFO, type V1ApiEntry } from "./api-info.js";
 import { serializeParams } from "./params.js";
+import { mintSts2, type Policy, type SecurityToken2 } from "./services/sts.js";
 import { VOD_V1_DEFAULT_REGION, VOD_V1_SERVICE, resolveV1Host } from "./service-config.js";
 
 export interface VodV1Options {
@@ -98,6 +99,12 @@ export class VodV1Client {
   /** Current time in epoch seconds, from the injectable clock (deterministic in tests). */
   now(): number {
     return Math.floor((this.clock ?? (() => new Date()))().getTime() / 1000);
+  }
+
+  /** Mint an STS2 token (port of base `sign_sts2`) from the literal ak/sk. */
+  signSts2(policy: Policy | null, expire: number): SecurityToken2 {
+    const { ak, sk } = this.literalCredentials();
+    return mintSts2(ak, sk, policy, expire, this.clock ? this.now() : undefined);
   }
 
   private async resolveCredentials(): Promise<SignCredentials> {

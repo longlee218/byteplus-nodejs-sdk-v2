@@ -3,8 +3,8 @@
 // minting (get_upload_sts2) is deferred to a follow-up slice.
 
 import { readFileSync } from "node:fs";
-import { dirname, join, extname } from "node:path";
 import type { VodV1Client } from "../client.js";
+import { parseM3u8Manifest, uploadM3u8Segments } from "./m3u8.js";
 import { rpcGet, rpcPostForm } from "./rpc.js";
 import {
   directUpload,
@@ -13,6 +13,7 @@ import {
   MIN_CHUNK_SIZE,
   type TransferOpts,
 } from "./tos-transport.js";
+import { allowStatement, type Policy, type SecurityToken2 } from "./sts.js";
 import type {
   ApplyUploadInfoRequest,
   ApplyUploadInfoResponse,
@@ -25,6 +26,7 @@ import type {
   ParseUploadManifestRequest,
   ParseUploadManifestResponse,
   UploadMediaRequest,
+  UploadMaterialRequest,
   UploadTobResult,
 } from "../models/upload.js";
 
@@ -99,12 +101,53 @@ export class VodUploadV1 {
     return { oid, sessionKey: addr.SessionKey };
   }
 
+  /** Upload a raw material file (FileType-tagged) → CommitUploadInfo. Storage class fixed 0. */
+  async uploadMaterial(req: UploadMaterialRequest): Promise<CommitUploadInfoResponse> {
+    const { sessionKey } = await this.uploadTob(
+      req.SpaceName ?? "",
+      req.FilePath ?? "",
+      req.FileType ?? "",
+      req.FileName ?? "",
+      req.FileExtension ?? "",
+      0,
+      req.UploadHostPrefer ?? "",
+    );
+    const commit = await this.commitUploadInfo({
+      SpaceName: req.SpaceName,
+      SessionKey: sessionKey,
+      Functions: req.Functions,
+      CallbackArgs: req.CallbackArgs,
+    });
+    if (commit.ResponseMetadata.Error?.Code) throw new Error(JSON.stringify(commit.ResponseMetadata.Error));
+    return commit;
+  }
+
+  /** Mint an STS2 upload token scoped to Apply/CommitUploadInfo (default 1h). */
+  getUploadSts2(): SecurityToken2 {
+    return this.getUploadSts2WithExpiredTime(60 * 60);
+  }
+
+  getUploadSts2WithExpiredTime(expireSeconds: number): SecurityToken2 {
+    const policy: Policy = { statements: [allowStatement(["vod:ApplyUploadInfo", "vod:CommitUploadInfo"], [])] };
+    return this.client.signSts2(policy, expireSeconds);
+  }
+
   /** High-level upload: optional m3u8 segment upload → uploadTob → CommitUploadInfo. */
   async uploadMedia(req: UploadMediaRequest): Promise<CommitUploadInfoResponse> {
     const filePath = req.FilePath ?? "";
     if (req.SupportParseManifest && filePath.toLowerCase().endsWith(".m3u8")) {
-      const segments = await this.parseM3u8Manifest(req.SpaceName ?? "", filePath);
-      await this.uploadM3u8Segments(req, segments);
+      const segments = await parseM3u8Manifest(
+        (content) => this.parseUploadManifest({ SpaceName: req.SpaceName, ManifestContent: content }),
+        filePath,
+      );
+      const sleep = this.transfer.sleep ?? ((ms: number) => new Promise((r) => setTimeout(r, ms)));
+      await uploadM3u8Segments(
+        (segPath, fileName, fileExt) =>
+          this.uploadTob(req.SpaceName ?? "", segPath, FILE_TYPE_OBJECT, fileName, fileExt, req.StorageClass ?? 0, req.UploadHostPrefer ?? ""),
+        sleep,
+        req,
+        segments,
+      );
     }
     const { sessionKey } = await this.uploadTob(
       req.SpaceName ?? "",
@@ -123,49 +166,5 @@ export class VodUploadV1 {
     });
     if (commit.ResponseMetadata.Error?.Code) throw new Error(JSON.stringify(commit.ResponseMetadata.Error));
     return commit;
-  }
-
-  /** Recursively parse a local m3u8 (via ParseUploadManifest) into segment file entries. */
-  async parseM3u8Manifest(spaceName: string, manifestPath: string): Promise<Array<{ filePath: string; fileName: string }>> {
-    const segments: Array<{ filePath: string; fileName: string }> = [];
-    const seen = new Set<string>();
-    const parse = async (currentPath: string, prefix: string): Promise<void> => {
-      const content = readFileSync(currentPath, "utf-8");
-      const resp = await this.parseUploadManifest({ SpaceName: spaceName, ManifestContent: content });
-      if (resp.ResponseMetadata.Error?.Code) throw new Error(JSON.stringify(resp.ResponseMetadata.Error));
-      const dir = dirname(currentPath);
-      for (const segment of resp.Result.Data?.MediaSegments ?? []) {
-        const segPath = join(dir, segment);
-        if (seen.has(segPath)) continue;
-        seen.add(segPath);
-        const fileName = prefix ? join(prefix, segment) : segment;
-        if (segPath.toLowerCase().endsWith(".m3u8")) {
-          const sub = dirname(fileName);
-          await parse(segPath, sub === "." ? "" : sub);
-        }
-        segments.push({ filePath: segPath, fileName });
-      }
-    };
-    await parse(manifestPath, "");
-    return segments;
-  }
-
-  private async uploadM3u8Segments(
-    req: UploadMediaRequest,
-    segments: Array<{ filePath: string; fileName: string }>,
-  ): Promise<void> {
-    const prefix = req.FileName ? (dirname(req.FileName) === "." ? "" : dirname(req.FileName) + "/") : "";
-    for (const seg of segments) {
-      const fileName = prefix + seg.fileName;
-      await this.uploadTob(
-        req.SpaceName ?? "",
-        seg.filePath,
-        FILE_TYPE_OBJECT,
-        fileName,
-        extname(fileName),
-        req.StorageClass ?? 0,
-        req.UploadHostPrefer ?? "",
-      );
-    }
   }
 }

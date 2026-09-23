@@ -3,15 +3,24 @@
 // Error.Code) pass through to the caller, matching the Python wrappers.
 
 import type { VodV1Client } from "../client.js";
+import { toVodError } from "../errors.js";
 
-/** GET dispatch → typed response. */
+/** GET dispatch → typed response. On HTTP error, raises the API Error.Code (Python parity). */
 export async function rpcGet<T>(client: VodV1Client, action: string, req: object): Promise<T> {
-  return JSON.parse(await client.get(action, req as Record<string, unknown>)) as T;
+  try {
+    return JSON.parse(await client.get(action, req as Record<string, unknown>)) as T;
+  } catch (err) {
+    throw toVodError(err);
+  }
 }
 
 /** POST x-www-form-urlencoded dispatch (request fields in the form body) → typed response. */
 export async function rpcPostForm<T>(client: VodV1Client, action: string, req: object): Promise<T> {
-  return JSON.parse(await client.post(action, undefined, req as Record<string, unknown>)) as T;
+  try {
+    return JSON.parse(await client.post(action, undefined, req as Record<string, unknown>)) as T;
+  } catch (err) {
+    throw toVodError(err);
+  }
 }
 
 /**
@@ -19,5 +28,9 @@ export async function rpcPostForm<T>(client: VodV1Client, action: string, req: o
  * query). The body is signed, so it uses Python-`json.dumps` spacing.
  */
 export async function rpcPostJson<T>(client: VodV1Client, action: string, req: unknown): Promise<T> {
-  return JSON.parse(await client.json(action, undefined, req)) as T;
+  try {
+    return JSON.parse(await client.json(action, undefined, req)) as T;
+  } catch (err) {
+    throw toVodError(err);
+  }
 }

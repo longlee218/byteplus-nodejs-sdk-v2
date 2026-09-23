@@ -7,6 +7,14 @@ export const VOD_V1_PACKAGE = "@byteplus-sdk/vod-v1";
 
 export { VodV1 } from "./vod-v1.js";
 export { VodV1Client, type VodV1Options } from "./client.js";
+export { VodV1ApiError } from "./errors.js";
+export {
+  mintSts2,
+  allowStatement,
+  type Policy,
+  type Statement,
+  type SecurityToken2,
+} from "./services/sts.js";
 export { VodPlaybackV1 } from "./services/playback.js";
 export { VodDrmV1 } from "./services/drm.js";
 export { VodUploadV1 } from "./services/upload.js";

@@ -171,3 +171,15 @@ export interface UploadTobResult {
   oid: string;
   sessionKey: string;
 }
+
+/** Request for `uploadMaterial` (a raw material file → commit). */
+export interface UploadMaterialRequest {
+  SpaceName?: string;
+  FilePath?: string;
+  FileType?: string;
+  FileName?: string;
+  FileExtension?: string;
+  UploadHostPrefer?: string;
+  Functions?: string;
+  CallbackArgs?: string;
+}
