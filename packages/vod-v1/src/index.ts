@@ -38,6 +38,9 @@ export * from "./models/cdn.js";
 export * from "./models/cdn-data.js";
 export { VodCallbackV1 } from "./services/callback.js";
 export * from "./models/callback.js";
+export { VodMeasureV1 } from "./services/measure.js";
+export * from "./models/measure.js";
+export * from "./models/measure-play.js";
 export {
   VOD_V1_API_INFO,
   VOD_V1_OP_COUNT,

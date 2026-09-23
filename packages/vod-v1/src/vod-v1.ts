@@ -11,6 +11,7 @@ import { VodWorkflowV1 } from "./services/workflow.js";
 import { VodSpaceV1 } from "./services/space.js";
 import { VodCdnV1 } from "./services/cdn.js";
 import { VodCallbackV1 } from "./services/callback.js";
+import { VodMeasureV1 } from "./services/measure.js";
 
 export class VodV1 {
   /** The underlying dispatch client (shared by every category service). */
@@ -31,6 +32,8 @@ export class VodV1 {
   readonly cdn: VodCdnV1;
   /** Callback subscription / event config. */
   readonly callback: VodCallbackV1;
+  /** Measure / billing statistics. */
+  readonly measure: VodMeasureV1;
 
   constructor(source: VodV1Options | VodV1Client = {}) {
     this.client = source instanceof VodV1Client ? source : new VodV1Client(source);
@@ -42,5 +45,6 @@ export class VodV1 {
     this.space = new VodSpaceV1(this.client);
     this.cdn = new VodCdnV1(this.client);
     this.callback = new VodCallbackV1(this.client);
+    this.measure = new VodMeasureV1(this.client);
   }
 }
