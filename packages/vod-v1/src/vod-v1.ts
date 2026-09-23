@@ -13,6 +13,7 @@ import { VodCdnV1 } from "./services/cdn.js";
 import { VodCallbackV1 } from "./services/callback.js";
 import { VodMeasureV1 } from "./services/measure.js";
 import { VodQualityV1 } from "./services/quality.js";
+import { VodEditV1 } from "./services/edit.js";
 
 export class VodV1 {
   /** The underlying dispatch client (shared by every category service). */
@@ -37,6 +38,8 @@ export class VodV1 {
   readonly measure: VodMeasureV1;
   /** Quality platform (media play data). */
   readonly quality: VodQualityV1;
+  /** Direct-edit ops (Tier-2: present but unwired in the Python SDK — they throw). */
+  readonly edit: VodEditV1;
 
   constructor(source: VodV1Options | VodV1Client = {}) {
     this.client = source instanceof VodV1Client ? source : new VodV1Client(source);
@@ -50,5 +53,6 @@ export class VodV1 {
     this.callback = new VodCallbackV1(this.client);
     this.measure = new VodMeasureV1(this.client);
     this.quality = new VodQualityV1(this.client);
+    this.edit = new VodEditV1(this.client);
   }
 }

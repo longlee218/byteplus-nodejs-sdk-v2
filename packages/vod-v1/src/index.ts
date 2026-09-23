@@ -43,6 +43,7 @@ export * from "./models/measure.js";
 export * from "./models/measure-play.js";
 export { VodQualityV1 } from "./services/quality.js";
 export * from "./models/quality.js";
+export { VodEditV1 } from "./services/edit.js";
 export {
   VOD_V1_API_INFO,
   VOD_V1_OP_COUNT,

@@ -12,7 +12,8 @@
     "types": ["node"],
     "paths": {
       "@byteplus-sdk/core": ["../packages/core/src/index.ts"],
-      "@byteplus-sdk/vod": ["../packages/vod/src/index.ts"]
+      "@byteplus-sdk/vod": ["../packages/vod/src/index.ts"],
+      "@byteplus-sdk/vod-v1": ["../packages/vod-v1/src/index.ts"]
     }
   },
   "include": ["*.ts"]

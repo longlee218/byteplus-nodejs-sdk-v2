@@ -121,4 +121,28 @@ export class VodMediaV1 {
   listFileMetaInfosByFileNames(req: ListFileMetaInfosByFileNamesRequest): Promise<ListFileMetaInfosByFileNamesResponse> {
     return rpcPostForm(this.client, "ListFileMetaInfosByFileNames", req);
   }
+
+  // ---- Tier-2 (faithful-broken) --------------------------------------------
+  // Present as in the Python SDK, but their Action is not registered in
+  // api_info, so each throws "no such api" — reproducing the shipped Python
+  // behavior exactly.
+
+  updateMediaStorageClass(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "UpdateMediaStorageClass", req);
+  }
+  getRecommendedPoster(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "GetRecommendedPoster", req);
+  }
+  createVideoClassification(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "CreateVideoClassification", req);
+  }
+  updateVideoClassification(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "UpdateVideoClassification", req);
+  }
+  deleteVideoClassification(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "DeleteVideoClassification", req);
+  }
+  listSnapshots(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "ListSnapshots", req);
+  }
 }

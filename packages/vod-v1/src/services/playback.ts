@@ -49,6 +49,12 @@ export class VodPlaybackV1 {
     return rpcGet(this.client, "GetHlsDecryptionKey", req);
   }
 
+  // Tier-2 (faithful-broken): present as in the Python SDK, but the Action is
+  // not registered in api_info, so it throws "no such api" — exactly like Python.
+  getPlayInfoWithLiveTimeShiftScene(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "GetPlayInfoWithLiveTimeShiftScene", req);
+  }
+
   // ---- token builders (local, no network) ---------------------------------
 
   /** base64({"TokenVersion":"V2","GetPlayInfoToken":<signed url>}). */

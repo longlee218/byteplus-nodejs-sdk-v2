@@ -83,4 +83,29 @@ export class VodCdnV1 {
   describeIpInfo(req: DescribeIpInfoRequest): Promise<DescribeIpInfoResponse> {
     return rpcGet(this.client, "DescribeIpInfo", req);
   }
+
+  // ---- Tier-2 (faithful-broken) --------------------------------------------
+  // Action not registered in api_info → throws "no such api", as in Python.
+
+  startDomain(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "StartDomain", req);
+  }
+  stopDomain(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "StopDomain", req);
+  }
+  addDomainToScheduler(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "AddDomainToScheduler", req);
+  }
+  removeDomainFromScheduler(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "RemoveDomainFromScheduler", req);
+  }
+  updateDomainPlayRule(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "UpdateDomainPlayRule", req);
+  }
+  updateDomainExpire(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "UpdateDomainExpire", req);
+  }
+  addOrUpdateCertificate(req: Record<string, unknown> = {}): Promise<never> {
+    return rpcGet(this.client, "AddOrUpdateCertificate", req);
+  }
 }
