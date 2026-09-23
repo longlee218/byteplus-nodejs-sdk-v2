@@ -23,7 +23,7 @@
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": ["dist", "README.md", "INTEGRATION.md", "LICENSE"],
   "publishConfig": {
     "access": "public"
   },

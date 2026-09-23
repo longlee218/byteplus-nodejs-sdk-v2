@@ -8,9 +8,12 @@ reuse [`@byteplus-sdk/core`](../core)'s SignatureV4 signer + transport.
 
 ## Install
 
-```sh
-npm install @byteplus-sdk/vod-v1 @byteplus-sdk/core
-```
+Not published to npm — install straight from git. Because this is a pnpm
+monorepo package that depends on `@byteplus-sdk/core`, a plain
+`npm install github:…` will not resolve; use one of the tested methods in
+[`INTEGRATION.md`](./INTEGRATION.md) (build & install tarballs, or a pnpm
+workspace submodule). Once installed you have both `@byteplus-sdk/vod-v1` and
+`@byteplus-sdk/core`.
 
 ## Quick start
 
