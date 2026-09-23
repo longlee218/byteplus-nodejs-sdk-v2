@@ -4,15 +4,19 @@
 
 import { VodV1Client, type VodV1Options } from "./client.js";
 import { VodPlaybackV1 } from "./services/playback.js";
+import { VodDrmV1 } from "./services/drm.js";
 
 export class VodV1 {
   /** The underlying dispatch client (shared by every category service). */
   readonly client: VodV1Client;
   /** Playback ops + play-auth token builders. */
   readonly playback: VodPlaybackV1;
+  /** Commercial-DRM token / cert-URL builders. */
+  readonly drm: VodDrmV1;
 
   constructor(source: VodV1Options | VodV1Client = {}) {
     this.client = source instanceof VodV1Client ? source : new VodV1Client(source);
     this.playback = new VodPlaybackV1(this.client);
+    this.drm = new VodDrmV1(this.client);
   }
 }

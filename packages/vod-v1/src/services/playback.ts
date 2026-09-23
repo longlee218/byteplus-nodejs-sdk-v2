@@ -5,6 +5,7 @@
 import { createHmac } from "node:crypto";
 import { getSigningKey, pyJsonStringify } from "@byteplus-sdk/core";
 import type { VodV1Client } from "../client.js";
+import { base64, withExpires } from "./token-util.js";
 import type {
   GetPlayInfoRequest,
   GetPlayInfoResponse,
@@ -15,8 +16,6 @@ import type {
   GetHlsDecryptionKeyRequest,
   GetHlsDecryptionKeyResponse,
 } from "../models/playback.js";
-
-const base64 = (s: string): string => Buffer.from(s, "utf-8").toString("base64");
 
 /** UTC `YYYYMMDDTHHMMSSZ` for an epoch-seconds instant. */
 function formatDeadline(epochSeconds: number): string {
@@ -58,15 +57,13 @@ export class VodPlaybackV1 {
 
   /** base64({"TokenVersion":"V2","GetPlayInfoToken":<signed url>}). */
   getPlayAuthToken(req: GetPlayInfoRequest, expire: number): string {
-    const params = this.withExpires(req, expire);
-    const token = this.client.getSignUrl("GetPlayInfo", params);
+    const token = this.client.getSignUrl("GetPlayInfo", withExpires(req, expire));
     return base64(pyJsonStringify({ TokenVersion: "V2", GetPlayInfoToken: token }));
   }
 
   /** The raw signed URL (Python returns it directly — no wrapper/base64). */
   getPrivateDrmPlayAuthToken(req: GetPrivateDrmPlayAuthRequest, expire: number): string {
-    const params = this.withExpires(req, expire);
-    return this.client.getSignUrl("GetPrivateDrmPlayAuth", params);
+    return this.client.getSignUrl("GetPrivateDrmPlayAuth", withExpires(req, expire));
   }
 
   /**
@@ -93,12 +90,5 @@ export class VodPlaybackV1 {
 
   getSha1HlsDrmAuthToken(expireSeconds: number): string {
     return this.createHlsDrmAuthToken("HMAC-SHA1", expireSeconds);
-  }
-
-  private withExpires(req: object, expire: number): Record<string, unknown> {
-    const params: Record<string, unknown> = { ...(req as Record<string, unknown>) };
-    // Python adds X-Expires only when expire > 0; getSignUrl serializes once.
-    if (expire > 0) params["X-Expires"] = String(expire);
-    return params;
   }
 }
