@@ -31,6 +31,22 @@ describe("VodSpaceV1", () => {
     expect(resp.Result[0]?.CanUseArchive).toBe(true);
   });
 
+  it("listSpace renders double Offset/Limit as Python floats and signs byte-identically", async () => {
+    const { box, http } = rec(JSON.stringify({ ResponseMetadata: { Error: { Code: "" } }, Result: [] }));
+    const c = new VodSpaceV1(new VodV1Client({ ak: AK, sk: SK, region: "ap-singapore-1", clock: CLOCK, httpClient: http }));
+    await c.listSpace({ Limit: 10, Offset: 5, ProjectName: "default" });
+
+    const q = query(box.req!.url);
+    expect(q["Offset"]).toBe("5.0");
+    expect(q["Limit"]).toBe("10.0");
+    // Byte-identical to Python `list_space` (patched clock, same creds).
+    expect(box.req?.headers["Authorization"]).toBe(
+      "HMAC-SHA256 Credential=AKTESTFIXTURE/20230101/ap-singapore-1/vod/request, " +
+        "SignedHeaders=host;x-content-sha256;x-date, " +
+        "Signature=aa263b981bb8585cb2461e258768a2c95997ffcc536c19708c76b549edacbce1",
+    );
+  });
+
   it("getSpaceDetail parses the space info", async () => {
     const canned = JSON.stringify({ ResponseMetadata: { Error: { Code: "" } }, Result: { SpaceName: "s1", BucketName: "b1" } });
     const { box, http } = rec(canned);
