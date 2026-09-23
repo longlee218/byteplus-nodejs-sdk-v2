@@ -6,6 +6,7 @@ import { VodV1Client, type VodV1Options } from "./client.js";
 import { VodPlaybackV1 } from "./services/playback.js";
 import { VodDrmV1 } from "./services/drm.js";
 import { VodUploadV1 } from "./services/upload.js";
+import { VodMediaV1 } from "./services/media.js";
 
 export class VodV1 {
   /** The underlying dispatch client (shared by every category service). */
@@ -14,13 +15,16 @@ export class VodV1 {
   readonly playback: VodPlaybackV1;
   /** Commercial-DRM token / cert-URL builders. */
   readonly drm: VodDrmV1;
-  /** Upload OpenAPI ops (apply/commit/query, upload-by-url, parse-manifest). */
+  /** Upload OpenAPI ops (apply/commit/query, upload-by-url, parse-manifest) + TOS transport. */
   readonly upload: VodUploadV1;
+  /** Media management (info/list/update/delete). */
+  readonly media: VodMediaV1;
 
   constructor(source: VodV1Options | VodV1Client = {}) {
     this.client = source instanceof VodV1Client ? source : new VodV1Client(source);
     this.playback = new VodPlaybackV1(this.client);
     this.drm = new VodDrmV1(this.client);
     this.upload = new VodUploadV1(this.client);
+    this.media = new VodMediaV1(this.client);
   }
 }

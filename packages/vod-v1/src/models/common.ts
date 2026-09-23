@@ -21,3 +21,8 @@ export interface VodResponse<T> {
   ResponseMetadata: ResponseMetadata;
   Result: T;
 }
+
+/** A response with only `ResponseMetadata` (no `Result`) — e.g. update ops. */
+export interface VodMetadataResponse {
+  ResponseMetadata: ResponseMetadata;
+}
