@@ -150,3 +150,24 @@ export interface VodParseUploadManifestResult {
 }
 
 export type ParseUploadManifestResponse = VodResponse<VodParseUploadManifestResult>;
+
+// ---- UploadMedia (local file → TOS → commit; the transport is US-015) -------
+
+export interface UploadMediaRequest {
+  SpaceName?: string;
+  FilePath?: string;
+  CallbackArgs?: string;
+  Functions?: string;
+  FileName?: string;
+  StorageClass?: number;
+  FileExtension?: string;
+  VodUploadSource?: string;
+  UploadHostPrefer?: string;
+  SupportParseManifest?: boolean;
+}
+
+/** Result of `uploadTob`: the object id + the session key to commit with. */
+export interface UploadTobResult {
+  oid: string;
+  sessionKey: string;
+}

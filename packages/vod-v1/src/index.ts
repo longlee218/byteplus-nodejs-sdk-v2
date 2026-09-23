@@ -10,6 +10,15 @@ export { VodV1Client, type VodV1Options } from "./client.js";
 export { VodPlaybackV1 } from "./services/playback.js";
 export { VodDrmV1 } from "./services/drm.js";
 export { VodUploadV1 } from "./services/upload.js";
+export {
+  crc32Hex,
+  MIN_CHUNK_SIZE,
+  defaultTosPut,
+  type TosPutClient,
+  type TosPutRequest,
+  type TosPutResponse,
+  type TransferOpts,
+} from "./services/tos-transport.js";
 export * from "./models/common.js";
 export * from "./models/business.js";
 export * from "./models/playback.js";
