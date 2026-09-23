@@ -8,6 +8,7 @@ import { VodDrmV1 } from "./services/drm.js";
 import { VodUploadV1 } from "./services/upload.js";
 import { VodMediaV1 } from "./services/media.js";
 import { VodWorkflowV1 } from "./services/workflow.js";
+import { VodSpaceV1 } from "./services/space.js";
 
 export class VodV1 {
   /** The underlying dispatch client (shared by every category service). */
@@ -22,6 +23,8 @@ export class VodV1 {
   readonly media: VodMediaV1;
   /** Transcode / workflow (start, retrieve result, execution status). */
   readonly workflow: VodWorkflowV1;
+  /** Space management (create/list/detail/config/storage data). */
+  readonly space: VodSpaceV1;
 
   constructor(source: VodV1Options | VodV1Client = {}) {
     this.client = source instanceof VodV1Client ? source : new VodV1Client(source);
@@ -30,5 +33,6 @@ export class VodV1 {
     this.upload = new VodUploadV1(this.client);
     this.media = new VodMediaV1(this.client);
     this.workflow = new VodWorkflowV1(this.client);
+    this.space = new VodSpaceV1(this.client);
   }
 }

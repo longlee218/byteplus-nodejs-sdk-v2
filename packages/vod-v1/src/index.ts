@@ -31,6 +31,8 @@ export * from "./models/playlist.js";
 export * from "./models/file.js";
 export { VodWorkflowV1 } from "./services/workflow.js";
 export * from "./models/workflow.js";
+export { VodSpaceV1 } from "./services/space.js";
+export * from "./models/space.js";
 export {
   VOD_V1_API_INFO,
   VOD_V1_OP_COUNT,
