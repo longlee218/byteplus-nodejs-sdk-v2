@@ -85,6 +85,21 @@ export class VodV1Client {
     return { ak: this.ak, sk: this.sk, sessionToken: this.sessionToken };
   }
 
+  /**
+   * Literal ak/sk/region for local URL/token signing (throws when only a
+   * credential provider is configured). Used by the play-auth / HLS DRM token
+   * builders, which sign locally from static credentials like the Python SDK.
+   */
+  signingMaterial(): { ak: string; sk: string; region: string } {
+    const c = this.literalCredentials();
+    return { ak: c.ak, sk: c.sk, region: this.region };
+  }
+
+  /** Current time in epoch seconds, from the injectable clock (deterministic in tests). */
+  now(): number {
+    return Math.floor((this.clock ?? (() => new Date()))().getTime() / 1000);
+  }
+
   private async resolveCredentials(): Promise<SignCredentials> {
     if (this.credentialProvider) {
       const c = await this.credentialProvider.getCredentials();

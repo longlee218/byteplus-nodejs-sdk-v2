@@ -5,7 +5,11 @@
 /** Package identity marker, mirroring the other packages. */
 export const VOD_V1_PACKAGE = "@byteplus-sdk/vod-v1";
 
+export { VodV1 } from "./vod-v1.js";
 export { VodV1Client, type VodV1Options } from "./client.js";
+export { VodPlaybackV1 } from "./services/playback.js";
+export * from "./models/common.js";
+export * from "./models/playback.js";
 export {
   VOD_V1_API_INFO,
   VOD_V1_OP_COUNT,
