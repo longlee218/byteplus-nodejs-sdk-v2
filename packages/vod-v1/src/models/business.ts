@@ -50,6 +50,23 @@ export interface VodSourceInfo {
   FileName?: string;
 }
 
+export interface VodSubtitleInfo {
+  Vid?: string;
+  FileId?: string;
+  Language?: string;
+  LanguageId?: number;
+  Format?: string;
+  SubtitleId?: string;
+  Title?: string;
+  Tag?: string;
+  Status?: string;
+  Source?: string;
+  StoreUri?: string;
+  SubtitleUrl?: string;
+  CreateTime?: string;
+  Version?: string;
+}
+
 /** Upload storage class (`vod_upload_pb2.StorageClassType`). */
 export enum StorageClassType {
   Default = 0,

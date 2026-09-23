@@ -138,3 +138,14 @@ export interface VodDeleteTranscodesData {
   NotExistFileIds?: string[];
 }
 export type DeleteTranscodesResponse = VodResponse<VodDeleteTranscodesData>;
+
+// ---- ListVideoClassifications ----------------------------------------------
+
+export interface ListVideoClassificationsRequest {
+  SpaceName?: string;
+  ClassificationId?: number;
+}
+export interface VodVideoClassificationsData {
+  ClassificationTrees?: VodClassification[];
+}
+export type ListVideoClassificationsResponse = VodResponse<VodVideoClassificationsData>;

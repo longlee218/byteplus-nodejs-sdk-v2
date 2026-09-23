@@ -26,6 +26,9 @@ export * from "./models/drm.js";
 export * from "./models/upload.js";
 export { VodMediaV1 } from "./services/media.js";
 export * from "./models/media.js";
+export * from "./models/subtitle.js";
+export * from "./models/playlist.js";
+export * from "./models/file.js";
 export {
   VOD_V1_API_INFO,
   VOD_V1_OP_COUNT,

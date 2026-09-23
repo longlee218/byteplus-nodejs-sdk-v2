@@ -3,6 +3,7 @@
 // Optional everywhere: the wire omits defaults and callers set only what they need.
 
 import type { VodResponse } from "./common.js";
+import type { VodSubtitleInfo } from "./business.js";
 
 // ---- GetPlayInfo -----------------------------------------------------------
 
@@ -87,23 +88,6 @@ export interface VodThumbInfo {
   ImgYLen?: number;
   Interval?: number;
   Format?: string;
-}
-
-export interface VodSubtitleInfo {
-  Vid?: string;
-  FileId?: string;
-  Language?: string;
-  LanguageId?: number;
-  Format?: string;
-  SubtitleId?: string;
-  Title?: string;
-  Tag?: string;
-  Status?: string;
-  Source?: string;
-  StoreUri?: string;
-  SubtitleUrl?: string;
-  CreateTime?: string;
-  Version?: string;
 }
 
 export interface BarrageMaskInfo {
