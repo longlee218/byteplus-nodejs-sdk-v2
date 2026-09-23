@@ -13,3 +13,11 @@ export async function rpcGet<T>(client: VodV1Client, action: string, req: object
 export async function rpcPostForm<T>(client: VodV1Client, action: string, req: object): Promise<T> {
   return JSON.parse(await client.post(action, undefined, req as Record<string, unknown>)) as T;
 }
+
+/**
+ * POST JSON dispatch (the whole request as the JSON body; Action+Version in
+ * query). The body is signed, so it uses Python-`json.dumps` spacing.
+ */
+export async function rpcPostJson<T>(client: VodV1Client, action: string, req: unknown): Promise<T> {
+  return JSON.parse(await client.json(action, undefined, req)) as T;
+}
