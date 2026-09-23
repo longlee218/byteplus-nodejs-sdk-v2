@@ -7,6 +7,7 @@ import { VodPlaybackV1 } from "./services/playback.js";
 import { VodDrmV1 } from "./services/drm.js";
 import { VodUploadV1 } from "./services/upload.js";
 import { VodMediaV1 } from "./services/media.js";
+import { VodWorkflowV1 } from "./services/workflow.js";
 
 export class VodV1 {
   /** The underlying dispatch client (shared by every category service). */
@@ -17,8 +18,10 @@ export class VodV1 {
   readonly drm: VodDrmV1;
   /** Upload OpenAPI ops (apply/commit/query, upload-by-url, parse-manifest) + TOS transport. */
   readonly upload: VodUploadV1;
-  /** Media management (info/list/update/delete). */
+  /** Media management (info/list/update/delete, subtitle, playlist, files). */
   readonly media: VodMediaV1;
+  /** Transcode / workflow (start, retrieve result, execution status). */
+  readonly workflow: VodWorkflowV1;
 
   constructor(source: VodV1Options | VodV1Client = {}) {
     this.client = source instanceof VodV1Client ? source : new VodV1Client(source);
@@ -26,5 +29,6 @@ export class VodV1 {
     this.drm = new VodDrmV1(this.client);
     this.upload = new VodUploadV1(this.client);
     this.media = new VodMediaV1(this.client);
+    this.workflow = new VodWorkflowV1(this.client);
   }
 }

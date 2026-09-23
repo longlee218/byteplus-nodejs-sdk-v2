@@ -29,6 +29,8 @@ export * from "./models/media.js";
 export * from "./models/subtitle.js";
 export * from "./models/playlist.js";
 export * from "./models/file.js";
+export { VodWorkflowV1 } from "./services/workflow.js";
+export * from "./models/workflow.js";
 export {
   VOD_V1_API_INFO,
   VOD_V1_OP_COUNT,
