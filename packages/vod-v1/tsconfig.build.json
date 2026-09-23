@@ -1,0 +1,10 @@
+{
+  // Used by tsup's dts build. Unlike tsconfig.json (which maps
+  // @byteplus-sdk/core to core's source for standalone typecheck), this
+  // resolves core via node_modules → its built .d.ts, so the emitted vod
+  // types reference the published core package, not core's source tree.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {}
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      // Typecheck against core's source so `pnpm -r typecheck` does not
+      // require core to be built first. Runtime resolution still uses the
+      // built package via node_modules (tsup externalizes it).
+      "@byteplus-sdk/core": ["../core/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}
