@@ -9,6 +9,7 @@ import { VodUploadV1 } from "./services/upload.js";
 import { VodMediaV1 } from "./services/media.js";
 import { VodWorkflowV1 } from "./services/workflow.js";
 import { VodSpaceV1 } from "./services/space.js";
+import { VodCdnV1 } from "./services/cdn.js";
 
 export class VodV1 {
   /** The underlying dispatch client (shared by every category service). */
@@ -25,6 +26,8 @@ export class VodV1 {
   readonly workflow: VodWorkflowV1;
   /** Space management (create/list/detail/config/storage data). */
   readonly space: VodSpaceV1;
+  /** Domain / CDN (domains, refresh/preload tasks, access & usage data). */
+  readonly cdn: VodCdnV1;
 
   constructor(source: VodV1Options | VodV1Client = {}) {
     this.client = source instanceof VodV1Client ? source : new VodV1Client(source);
@@ -34,5 +37,6 @@ export class VodV1 {
     this.media = new VodMediaV1(this.client);
     this.workflow = new VodWorkflowV1(this.client);
     this.space = new VodSpaceV1(this.client);
+    this.cdn = new VodCdnV1(this.client);
   }
 }
